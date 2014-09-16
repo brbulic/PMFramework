@@ -9,9 +9,7 @@
 #ifndef Pods_PMExtensions_h
 #define Pods_PMExtensions_h
 
-#ifdef __OBJC__
-    #import "NSString+PMExtensions.h"
-    #import "PMSerializable.h"
-#endif
+#import "NSString+PMExtensions.h"
+#import "PMSerializable.h"
 
 #endif
