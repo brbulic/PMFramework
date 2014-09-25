@@ -11,6 +11,6 @@
 @interface NSUserDefaults (PMExtensions)
 
 - (void)encodeObject:(id<NSCoding>)object forKey:(NSString *)key;
-- (id<NSCoding>)decodeObjectForKey:(NSString *)key;
+- (id<NSCoding>)decodeObjectForKey:(NSString *)key withError:(NSError **)error;
 
 @end

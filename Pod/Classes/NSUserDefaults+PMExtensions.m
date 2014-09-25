@@ -20,7 +20,7 @@
     [self synchronize];
 }
 
-- (id<NSCoding>)decodeObjectForKey:(NSString *)key {
+- (id<NSCoding>)decodeObjectForKey:(NSString *)key withError:(NSError *__autoreleasing *)error {
     NSParameterAssert(key);
     
     NSData * data = [self objectForKey:key];
@@ -28,18 +28,30 @@
         return nil;
     }
     
-    id result = [NSKeyedUnarchiver unarchiveObjectWithData:data];
     
-    if (result) {
-        __unused BOOL doesConform = [result conformsToProtocol:@protocol(NSCoding)];
-        NSAssert(doesConform, @"The extracted object must conform to NSCoding protocol!");
+    id result;
+    
+    @try {
+        result = [NSKeyedUnarchiver unarchiveObjectWithData:data];
         
-        return result;
+        if (result) {
+            BOOL doesConform = [result conformsToProtocol:@protocol(NSCoding)];
+            if (!doesConform) {
+                NSError * retEr = [NSError errorWithDomain:@"Doesn't conform to NSCoding, how did it get here?" code:-1 userInfo:@{}];
+                *error = retEr;
+            }
+        } else {
+            NSLog(@"We have a nil result here");
+            NSError * rE = [NSError errorWithDomain:@"Result is nil!" code:-1 userInfo:@{}];
+            *error = rE;
+        }
+    }
+    @catch (NSException *exception) {
+        NSError * returnedError = [NSError errorWithDomain:exception.description code:exception.hash userInfo:exception.userInfo];
+        *error = returnedError;
     }
     
-    NSLog(@"We have a nil result here");
-    
-    return nil;
+    return result;
 }
 
 
